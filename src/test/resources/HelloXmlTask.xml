@@ -12,9 +12,9 @@
         
         <import resource="classpath:batchConfig.xml"/>
         <bean id="taskletFirst" class="pl.java.scalatech.tasklet.FirstTasklet"/> 
-        <context:component-scan base-package="pl.java.scalatech" use-default-filters="false" >
-           <context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>
-        </context:component-scan>
+        <bean id="stringReader" class="pl.java.scalatech.reader.StringReader"/>
+        <bean id="stringWriter" class="pl.java.scalatech.writer.StringWriter"/>
+        <bean id="stringProcessor" class="pl.java.scalatech.processor.StringProcessor"/>
        
     
         <batch:job id="xmlTasklet">
