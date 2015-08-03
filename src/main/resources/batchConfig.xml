@@ -17,11 +17,9 @@
         http://www.springframework.org/schema/jdbc  http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
         http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
         
-        
-    
+     
     <context:property-placeholder location="classpath:application.properties" system-properties-mode="OVERRIDE" ignore-unresolvable="false" />   
-           
- 
+          
     <bean id="dataSource" primary="true" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="${spring.datasource.driver-class-name}" />
         <property name="url" value="${spring.datasource.url}" />

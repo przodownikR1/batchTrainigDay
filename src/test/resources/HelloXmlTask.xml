@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:batch="http://www.springframework.org/schema/batch"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
+        http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd ">
+        
+        
+        <import resource="classpath:batchConfig.xml"/>
+        <bean id="taskletFirst" class="pl.java.scalatech.tasklet.FirstTasklet"/> 
+        <context:component-scan base-package="pl.java.scalatech" use-default-filters="false" >
+           <context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>
+        </context:component-scan>
+       
+    
+        <batch:job id="xmlTasklet">
+          <batch:step id="xmlStep" >
+            <batch:tasklet>
+               <batch:chunk reader="stringReader" processor="stringProcessor" writer="stringWriter" commit-interval="2"/>
+            </batch:tasklet>
+          </batch:step>
+        </batch:job>
+        
+        
+        </beans>
