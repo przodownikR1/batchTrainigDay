@@ -20,6 +20,7 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -32,6 +33,7 @@ import com.google.common.collect.Maps;
 @Slf4j
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { JpaConfig.class, BatchConfig.class, FirstJob.class })
+@ActiveProfiles("first")
 public class HelloTaskletTest {
 
     @Autowired
@@ -45,7 +47,7 @@ public class HelloTaskletTest {
 
         Map<String, JobParameter> params = Maps.newHashMap(); //za każdym razem musi byc tworzony inny zestaw parametrow
         params.put("time", new JobParameter(new Date()));
-        params.put("message",new JobParameter("Hello przodownik"));
+        params.put("message", new JobParameter("Hello przodownik"));
         params.put("file", new JobParameter("customers.csv.zip"));
         params.put("dir", new JobParameter("/tmp"));
         JobExecution execution = jobLauncher.run(job, new JobParameters(params));

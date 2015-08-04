@@ -22,15 +22,9 @@ import pl.java.scalatech.tasklet.UnzipTasklet;
 @ComponentScan(basePackages = { "pl.java.scalatech.tasklet" })
 @Profile("first")
 public class FirstJob {
-    /*
-     * @Autowired
-     * private Tasklet system;
-     */
 
-    /*
-     * @Autowired
-     * private UnzipTasklet unzipTasklet;
-     */
+    @Autowired
+    private Tasklet first;
 
     @Autowired
     private JobBuilderFactory jobBuilderFactory;
@@ -39,24 +33,19 @@ public class FirstJob {
     private StepBuilderFactory stepBuilderFactory;
 
     @Bean
-    public Job job(Step step) {
-        return jobBuilderFactory.get("firstTaskletJob").start(step).build();
+    public Job job(Step step1, Step step2) {
+        return jobBuilderFactory.get("firstTaskletJob").start(step1).next(step2).build();
     }
 
     @Bean
-    public Step step(Tasklet tasklet) {
-        return stepBuilderFactory.get("step1").tasklet(tasklet).build();
+    public Step step1(Tasklet unzipTasklet) {
+        return stepBuilderFactory.get("step1").tasklet(unzipTasklet).build();
     }
 
-    /*
-     * @Bean
-     * @StepScope
-     * public FirstTasklet tasklet(@Value("#{jobParameters['message']}") String message) {
-     * FirstTasklet tasklet = new FirstTasklet();
-     * tasklet.setMessage(message);
-     * return tasklet;
-     * }
-     */
+    @Bean
+    public Step step2(Tasklet first) {
+        return stepBuilderFactory.get("step2").tasklet(first).build();
+    }
 
     @Bean
     @StepScope

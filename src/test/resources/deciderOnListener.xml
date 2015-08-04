@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:batch="http://www.springframework.org/schema/batch"
+    xmlns:task="http://www.springframework.org/schema/task"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+ 
+ <import resource="classpath:batchConfig.xml"/>
+ 
+ <bean id="myDecider" class="pl.java.scalatech.decider.SkippedDecider"/>
+ <bean id="registerItemsDecider" class="pl.java.scalatech.decider.RegisterItemDecider"/>
+ 
+ 
+ <bean id ="startTasklet" class="pl.java.scalatech.tasklet.HelloTasklet"/>
+  <bean id ="registerTasklet" class="pl.java.scalatech.tasklet.RegisterTasklet"/>
+ <bean id="cleanTasklet" class="pl.java.scalatech.tasklet.CleanTasklet"/>
+ <bean id="indexTasklet" class="pl.java.scalatech.tasklet.IndexTasklet"/>
+ <bean id="generateReportTasklet" class="pl.java.scalatech.tasklet.ReportTasklet"/>
+
+ <bean id="jobListener" class="pl.java.scalatech.listener.JobLoggerListener"/>
+ <bean id="stepListener" class="pl.java.scalatech.listener.StepLoggingListener"/>
+ <bean id="deciderListener" class="pl.java.scalatech.listener.SkippedItemsStepListener"/>
+ <bean id="jobParametersIncrementer" class="org.springframework.batch.core.launch.support.RunIdIncrementer"/> 
+ 
+  <batch:job id="simpleDeciderTask" incrementer="jobParametersIncrementer">
+        <batch:step id="startStep" next="decide">
+            <tasklet ref="startTasklet"/>
+        </batch:step>
+        
+        <batch:decision id="decide" decider="myDecider">
+            <batch:end on="COMPLETED"/>
+            <batch:next on="SKIPPED" to="registerSkipRecord"/>
+        </batch:decision>
+        
+        <batch:step id="registerSkipRecord">
+            <tasklet ref="registerTasklet">
+             <batch:listeners>
+              <batch:listener ref="deciderListener"/>
+            </batch:listeners>
+            </tasklet>
+            <batch:next on="COMPLETED WITH SKIPS" to="generateReportStep"/>
+            <batch:next on="*" to="indexStep"/>
+        </batch:step>
+        
+        
+        <batch:step id="generateReportStep" next="indexStep">
+            <tasklet ref="generateReportTasklet"/>
+        </batch:step>
+        
+        <batch:step id="indexStep" next="cleanStep">
+            <tasklet ref="indexTasklet"/>
+        </batch:step>
+        
+        <batch:step id="cleanStep">
+            <tasklet ref="cleanTasklet"/>
+            <batch:listeners>
+              <batch:listener ref="stepListener"/>
+            </batch:listeners>
+        </batch:step>
+        <batch:listeners>
+        
+          <batch:listener ref="jobListener" />
+        </batch:listeners>
+        
+    </batch:job>
+   
+ </beans>

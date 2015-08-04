@@ -20,18 +20,18 @@ import org.springframework.stereotype.Component;
 public class FirstTasklet implements Tasklet {
     @Setter
     private String message;
-    
+
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-        log.info("+++ tasklet step executed ... {}",message);
+        log.info("+++ taskletFirst step executed ... {}", message);
         JobParameters jobParameters = chunkContext.getStepContext().getStepExecution().getJobParameters();
-        
+
         if (jobParameters.isEmpty()) {
             log.info("++++ No job parameters!");
         } else {
             log.info("+++  Job parameters:");
             for (Map.Entry<String, JobParameter> param : jobParameters.getParameters().entrySet()) {
-                log.info("++++  name:  {} , value :  {} , type : {}",param.getKey(), param.getValue().getValue(), param.getValue().getType());
+                log.info("++++  name:  {} , value :  {} , type : {}", param.getKey(), param.getValue().getValue(), param.getValue().getType());
             }
         }
         return RepeatStatus.FINISHED;

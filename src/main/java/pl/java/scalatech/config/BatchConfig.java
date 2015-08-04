@@ -8,6 +8,7 @@ import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.task.support.TaskExecutorAdapter;
 
 @EnableBatchProcessing
@@ -15,6 +16,7 @@ import org.springframework.core.task.support.TaskExecutorAdapter;
 public class BatchConfig {
 
     @Bean
+    @Profile("async")
     JobLauncher jobLauncher(JobRepository jobRepository) {
         SimpleJobLauncher jobLauncher = new SimpleJobLauncher();
         jobLauncher.setJobRepository(jobRepository);
