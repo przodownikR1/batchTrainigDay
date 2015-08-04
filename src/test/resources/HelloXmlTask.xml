@@ -15,15 +15,32 @@
         <bean id="stringReader" class="pl.java.scalatech.reader.StringReader"/>
         <bean id="stringWriter" class="pl.java.scalatech.writer.StringWriter"/>
         <bean id="stringProcessor" class="pl.java.scalatech.processor.StringProcessor"/>
-       
+         <bean id="firstJobListener" class="pl.java.scalatech.listener.FirstJobListener"/>
+         <bean id="firstStepListener" class="pl.java.scalatech.listener.FirstStepListener"/>
     
+ 
+    
+ 
         <batch:job id="xmlTasklet">
           <batch:step id="xmlStep" >
             <batch:tasklet>
                <batch:chunk reader="stringReader" processor="stringProcessor" writer="stringWriter" commit-interval="2"/>
             </batch:tasklet>
+            <batch:listeners>
+               <batch:listener ref="firstStepListener"/>
+            </batch:listeners>
+            
           </batch:step>
+            <batch:listeners>
+               <batch:listener ref="firstJobListener"/>
+            </batch:listeners> 
         </batch:job>
+       
+   </beans>
         
-        
-        </beans>
+        <!--    <bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+      <property name="jobRepository" ref="jobRepository" />
+         <property name="taskExecutor">
+        <bean class="org.springframework.core.task.SimpleAsyncTaskExecutor" />
+      </property>
+     </bean> -->

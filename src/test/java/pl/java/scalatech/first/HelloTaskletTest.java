@@ -45,6 +45,9 @@ public class HelloTaskletTest {
 
         Map<String, JobParameter> params = Maps.newHashMap(); //za każdym razem musi byc tworzony inny zestaw parametrow
         params.put("time", new JobParameter(new Date()));
+        params.put("message",new JobParameter("Hello przodownik"));
+        params.put("file", new JobParameter("customers.csv.zip"));
+        params.put("dir", new JobParameter("/tmp"));
         JobExecution execution = jobLauncher.run(job, new JobParameters(params));
         log.info("Exit Status :  {}", execution.getExitStatus());
         Assert.assertEquals(ExitStatus.COMPLETED, execution.getExitStatus());
