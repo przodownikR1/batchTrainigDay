@@ -12,22 +12,23 @@ import org.springframework.batch.repeat.RepeatStatus;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
+
 @Slf4j
 public class RegisterTasklet implements Tasklet {
-   
-    public RepeatStatus execute(final StepContribution sc, final ChunkContext context) throws Exception {  
+
+    @Override
+    public RepeatStatus execute(final StepContribution sc, final ChunkContext context) throws Exception {
         log.info("+++ Register task ..... execute !!! ");
-        
+
         JobParameters jobParams = context.getStepContext().getStepExecution().getJobExecution().getJobParameters();
-        log.info("time : {}",jobParams.getDate("time"));
-        log.info("test : {}",jobParams.getString("test"));
+        log.info("time : {}", jobParams.getDate("time"));
+        log.info("test : {}", jobParams.getString("test"));
         ExecutionContext jobExecutionContext = context.getStepContext().getStepExecution().getJobExecution().getExecutionContext();
         String id = Hashing.md5().hashString(jobParams.getString("test"), Charsets.UTF_8).toString();
-        log.info("+++ put Id {} to context ",id);
+        log.info("+++ put Id {} to context ", id);
         jobExecutionContext.put("ID", id);
-       
-        
-        
+        Thread.sleep(3000);
+
         return FINISHED;
     }
 }

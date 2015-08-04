@@ -4,6 +4,7 @@ import static org.springframework.batch.repeat.RepeatStatus.FINISHED;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -21,6 +22,10 @@ public class IndexTasklet implements Tasklet {
         ExecutionContext jobExecutionContext = context.getStepContext().getStepExecution().getJobExecution().getExecutionContext();
         String id = jobExecutionContext.getString("ID");
         log.info("+++ retrieve id from context {}", id);
+        JobParameters jobParams = context.getStepContext().getStepExecution().getJobExecution().getJobParameters();
+        boolean noProblem = Boolean.parseBoolean(jobParams.getString("no_problem"));
+
+        //Preconditions.checkArgument(noProblem, "simulate break programming flow... ");
 
         log.info("!!!  retrive login from SpEl + lazy binding {}", login);
         return FINISHED;

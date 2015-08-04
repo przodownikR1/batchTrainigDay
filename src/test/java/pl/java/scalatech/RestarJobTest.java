@@ -1,11 +1,11 @@
-package pl.java.scalatech.decideListener;
+package pl.java.scalatech;
 
-import java.util.Date;
 import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
 
 import org.assertj.core.api.Assertions;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.core.Job;
@@ -28,7 +28,7 @@ import com.google.common.collect.Maps;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:deciderOnListener.xml")
 @ActiveProfiles("test")
-public class DeciderOnListenerTest {
+public class RestarJobTest {
 
     @Autowired
     private Job simpleDeciderTask;
@@ -42,15 +42,16 @@ public class DeciderOnListenerTest {
     }
 
     @Test
+    @Ignore
     public void shouldDeciderWork() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException,
             JobParametersInvalidException {
         Map<String, JobParameter> params = Maps.newHashMap();
-        params.put("test", new JobParameter("przodownik"));
-        params.put("time", new JobParameter(new Date()));
+        params.put("test", new JobParameter("przodownik5"));
         params.put("error", new JobParameter("true"));
         params.put("no_problem", new JobParameter("true"));
         params.put("skipRegister", new JobParameter("false"));
         JobExecution execution = jobLauncher.run(simpleDeciderTask, new JobParameters(params));
         log.info("Exit Status :  {}", execution.getExitStatus());
     }
+
 }
