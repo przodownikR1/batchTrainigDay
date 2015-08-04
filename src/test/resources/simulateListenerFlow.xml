@@ -11,52 +11,43 @@
         
         
         <import resource="classpath:batchConfig.xml"/>
+        
         <bean id="taskletFirst" class="pl.java.scalatech.tasklet.FirstTasklet"/> 
+        <bean id="tasklet2" class="pl.java.scalatech.tasklet.Tasklet2"/> 
+        <bean id="tasklet3" class="pl.java.scalatech.tasklet.Tasklet3"/> 
         <bean id="stringReader" class="pl.java.scalatech.reader.StringReader"/>
         <bean id="stringWriter" class="pl.java.scalatech.writer.StringWriter"/>
         <bean id="stringProcessor" class="pl.java.scalatech.processor.StringProcessor"/>
          <bean id="firstJobListener" class="pl.java.scalatech.listener.FirstJobListener"/>
          <bean id="firstStepListener" class="pl.java.scalatech.listener.FirstStepListener"/>
-         
- <bean id="validator" class="org.springframework.batch.core.job.DefaultJobParametersValidator" >
-        <property name="requiredKeys">
-            <set>
-                 <value>date</value>
-            </set>
-          </property>
-          <property name="optionalKeys">
-                <set>
-                    <value>id</value>
-                </set>
-            </property>
-   </bean>
-    
-    
- 
-        <batch:job id="xmlTasklet"  >
-        <batch:validator ref="validator"/>
-          <batch:step id="xmlStep"  >
+         <bean id="deciderListener" class="pl.java.scalatech.listener.StepDeciderListener"/>
+        
+       <batch:job id="decideListenerJob">
+          <batch:step id="xmlStep">
             <batch:tasklet>
                <batch:chunk reader="stringReader" processor="stringProcessor" writer="stringWriter" commit-interval="2"/>
+               <batch:listeners>
+                <batch:listener ref="deciderListener"/>
+              </batch:listeners>
             </batch:tasklet>
-            <batch:listeners>
-               <batch:listener ref="firstStepListener"/>
-            </batch:listeners>
-            
+            <batch:next on="COMPLETED WITH SKIPS" to="tasklet2Step"/>
+            <batch:next on="*" to="tasklet3Step"/>
+          </batch:step> 
+          
+           
+        
+       
+          <batch:step id="tasklet2Step" next="tasklet3Step">
+             <batch:tasklet ref="tasklet2"/>
           </batch:step>
           
-          
+          <batch:step id="tasklet3Step">
+            <batch:tasklet ref="tasklet3"/>
+          </batch:step>
           
             <batch:listeners>
                <batch:listener ref="firstJobListener"/>
             </batch:listeners> 
         </batch:job>
-       
    </beans>
         
-        <!--    <bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
-      <property name="jobRepository" ref="jobRepository" />
-         <property name="taskExecutor">
-        <bean class="org.springframework.core.task.SimpleAsyncTaskExecutor" />
-      </property>
-     </bean> -->
