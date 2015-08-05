@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:batch="http://www.springframework.org/schema/batch"
+    xmlns:task="http://www.springframework.org/schema/task"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+ 
+  <import resource="classpath:batchConfig.xml"/>
+  <bean id="stringWriter" class="pl.java.scalatech.writer.StringWriter"/>
+  <bean id="idIncrementer" class="org.springframework.batch.core.launch.support.RunIdIncrementer"/>
+  <bean id="personMapper" class="pl.java.scalatech.mapper.PersonMapper" scope="prototype"/>
+  <bean id="person2StingProcessor" class="pl.java.scalatech.processor.Person2StringProcessor"/>
+  <bean id="inputFile" class="org.springframework.core.io.ClassPathResource" scope="step">
+        <constructor-arg value="#{jobParameters[inputFile]}"/> <!--SpEl , late binding  !! - mandatory step -->
+   </bean>
+
+	<bean id="inputReader" class="org.springframework.batch.item.file.FlatFileItemReader">
+		<property name="resource" ref="inputFile" />
+		<property name="linesToSkip" value="1" />
+		<property name="lineMapper">
+			<bean class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+				<property name="lineTokenizer">
+					<bean
+						class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
+						<property name="names" value="login, passwd, age" />
+					</bean>
+
+				</property>
+				<property name="fieldSetMapper" ref="personMapper">
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+ <bean id="validatorProcessor" class="org.springframework.batch.item.validator.ValidatingItemProcessor">
+      <property name="filter" value="false"/>
+       <property name="validator">
+          <bean class="pl.java.scalatech.processor.PersonValidator"/>
+       </property>
+    </bean>  
+
+<bean id="compositeItemProcessor"
+      class="org.springframework.batch.item.support.CompositeItemProcessor">
+    <property name="delegates">
+        <list>
+            <ref bean="validatorProcessor"/>
+            <ref bean="person2StingProcessor"/>
+        </list>
+    </property>
+</bean>
+
+
+  <batch:job id="readFileJob" incrementer="idIncrementer">
+        <batch:step id="readFileStep">
+            <batch:tasklet>
+                <batch:chunk reader="inputReader" processor="compositeItemProcessor" writer="stringWriter"
+                       commit-interval="5"/>
+            </batch:tasklet>
+        </batch:step>
+    </batch:job>  
+   
+ </beans>
